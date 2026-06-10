@@ -1,4 +1,4 @@
-import { Module, Post } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 
@@ -30,10 +30,18 @@ import { Subject } from './subjects/entities/subject.entity';
 import { Subscription } from './subscriptions/entities/subscription.entity';
 import { SubscriptionHistory } from './subscriptions-history/entities/subscription-history.entity';
 import { PostEntity } from './posts/entities/posts.entities';
-
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
+    ConfigModule.forRoot({
+      isGlobal: true,
+      envFilePath: '.env',
+      // validationSchema:joi.object({
+      //   APP_NAME: joi.string().default('My_App')
+      // })
+      load: [appConfig],
+    }),
     //  TypeOrmModule.forRoot({
     //   type: 'postgres',
     //   // Pass your connection link directly here
@@ -43,11 +51,11 @@ import { PostEntity } from './posts/entities/posts.entities';
     // }),
     TypeOrmModule.forRoot({
       type: 'postgres',
-      host: '127.0.0.1', // Localhost IP
-      port: 5432, // Default Postgres port
-      username: 'postgres', // Your Postgres username
-      password: 'password', // The password you set during installation
-      database: 'postgresproj1', // The database name you see in DBeaver
+      host: process.env.DB_HOST || '127.0.0.1',
+      port: parseInt(process.env.DB_PORT || '5432'),
+      username: process.env.DB_USERNAME || 'postgres',
+      password: process.env.DB_PASSWORD || '12345',
+      database: process.env.DB_NAME || 'postgresproj1',
       entities: [
         User,
         Teacher,
@@ -60,17 +68,9 @@ import { PostEntity } from './posts/entities/posts.entities';
         Subject,
         Subscription,
         SubscriptionHistory,
-        PostEntity
+        PostEntity,
       ],
       synchronize: true, // Automatically syncs database schema with code (Disable in production!)
-    }),
-    ConfigModule.forRoot({
-      isGlobal: true,
-      envFilePath: '.env',
-      // validationSchema:joi.object({
-      //   APP_NAME: joi.string().default('My_App')
-      // })
-      load: [appConfig],
     }),
     LocationsModule,
     UsersModule,
@@ -78,6 +78,7 @@ import { PostEntity } from './posts/entities/posts.entities';
     SubscriptionsHistoryModule,
     PaymentStatusModule,
     PostsModule,
+    AuthModule,
   ],
   controllers: [
     AppController,

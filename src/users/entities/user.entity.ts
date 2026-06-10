@@ -1,4 +1,11 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, OneToOne } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  CreateDateColumn,
+  UpdateDateColumn,
+  OneToOne,
+} from 'typeorm';
 import { Teacher } from './teacher.entity';
 import { Student } from './student.entity';
 
@@ -20,7 +27,10 @@ export class User {
   password?: string; // Optional if you have social auth later
 
   @Column({ length: 15 })
-  name: string;
+  firstName: string;
+
+  @Column({ length: 15 })
+  lastName: string;
 
   @Column({ length: 10 })
   phone: string;
@@ -34,6 +44,9 @@ export class User {
     default: UserRole.STUDENT,
   })
   role: UserRole;
+
+  @Column({ default: false })
+  isActive: boolean;
 
   @CreateDateColumn()
   createdAt: Date;
