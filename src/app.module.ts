@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, Post } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 
@@ -18,6 +18,19 @@ import { PostsModule } from './posts/posts.module';
 
 import appConfig from './config/app.config';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { User } from './users/entities/user.entity';
+import { Teacher } from './users/entities/teacher.entity';
+import { Student } from './users/entities/student.entity';
+import { StudentSubject } from './users/entities/student-subject.entity';
+import { State } from './locations/entities/state.entity';
+import { City } from './locations/entities/city.entity';
+import { Area } from './locations/entities/area.entity';
+import { Class } from './classes/entities/class.entity';
+import { Subject } from './subjects/entities/subject.entity';
+import { Subscription } from './subscriptions/entities/subscription.entity';
+import { SubscriptionHistory } from './subscriptions-history/entities/subscription-history.entity';
+import { PostEntity } from './posts/entities/posts.entities';
+
 
 @Module({
   imports: [
@@ -33,9 +46,22 @@ import { TypeOrmModule } from '@nestjs/typeorm';
       host: '127.0.0.1', // Localhost IP
       port: 5432, // Default Postgres port
       username: 'postgres', // Your Postgres username
-      password: '12345', // The password you set during installation
-      database: 'postgres', // The database name you see in DBeaver
-      entities: [], // We will add your entities here later
+      password: 'password', // The password you set during installation
+      database: 'postgresproj1', // The database name you see in DBeaver
+      entities: [
+        User,
+        Teacher,
+        Student,
+        StudentSubject,
+        State,
+        City,
+        Area,
+        Class,
+        Subject,
+        Subscription,
+        SubscriptionHistory,
+        PostEntity
+      ],
       synchronize: true, // Automatically syncs database schema with code (Disable in production!)
     }),
     ConfigModule.forRoot({
