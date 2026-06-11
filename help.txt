@@ -1,0 +1,7 @@
+ type: 'postgres',
+      host: '127.0.0.1', // Localhost IP
+      port: 5432, // Default Postgres port
+      username: 'postgres', // Your Postgres username
+      // password: 'password', // The password you set during installation
+      password: '12345',
+      database: 'postgresproj1',
