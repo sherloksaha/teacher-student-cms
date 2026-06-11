@@ -18,11 +18,14 @@ export class RoleGuard implements CanActivate {
                 context.getClass(), //class level metadata
             ]
         );
+        
+  
         if (!requiredRoles) {
             return true;
         }
 
         const { user } = context.switchToHttp().getRequest(); //this user object is attached by jwt auth guard 
+    
         if (!user) {
             throw new UnauthorizedException('User not authenticated');
         }

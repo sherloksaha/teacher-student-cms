@@ -7,6 +7,7 @@ import * as bcrypt from 'bcrypt';
 import { LoginDto } from './dto/login-dto';
 import { JwtService } from '@nestjs/jwt';
 import { UpdateUserDto } from 'src/users/dto/update-user-dto';
+import { UserRole } from './constant';
 // import { LoginDto } from './dto/login-dto';
 
 @Injectable()
@@ -34,7 +35,7 @@ export class AuthService {
       role: userData.role, // Default to STUDENT if role is not provided
     });
     const savedUser = await this.userRepository.save(newUser);
-    const { password,...result } = savedUser;
+    const { password, ...result } = savedUser;
     return {
       user: result,
       message: 'User registered successfully',
@@ -43,6 +44,7 @@ export class AuthService {
   }
 
   async login(userData: LoginDto) {
+ 
     const user = await this.userRepository.findOne({
       where: { email: userData.email },
     });
@@ -57,7 +59,7 @@ export class AuthService {
 
     return {
       user: rest,
-      accessTokn: tokens.accessToken,
+      accessToken: tokens.accessToken,
       refreshToken: tokens.refreshToken,
       message: 'Login successful',
       status: 200,
@@ -71,17 +73,17 @@ export class AuthService {
     }
   }
 
-  async refreshToken(refreshToken:string ){
-    try{
+  async refreshToken(refreshToken: string) {
+    try {
       const payload = this.jwtService.verify(refreshToken, {
-        secret:  process.env.JWT_SERVICE_SECRET,
+        secret: process.env.JWT_SERVICE_SECRET,
       })
       const user = await this.userRepository.findOne({
         where: {
           id: payload.sub
         }
       })
-      if(!user){
+      if (!user) {
         throw new UnauthorizedException('No user found , check your token again!')
       }
       const accessToken = this.generateAccessToken(user);
@@ -90,19 +92,19 @@ export class AuthService {
         status: 200,
         accessToken
       }
-    }catch(e){
+    } catch (e) {
       throw new UnauthorizedException('Invalid token!')
     }
   }
-  async findCurrentUser(id: string) {
+  async findCurrentUser(id: string | number) {
     const user = await this.userRepository.findOne({
-      where: { id: parseInt(id) },
+      where: { id: Number(id) },
     });
     if (!user) {
       throw new NotFoundException('User not found');
     }
     const { password, ...result } = user;
-    return { data: result, status: 200 , message:"Current User Found"};
+    return { data: result, status: 200, message: "Current User Found" };
   }
 
   async upDateUser(id: number, updateUser: UpdateUserDto) {
@@ -127,6 +129,33 @@ export class AuthService {
     const updatedUser = await this.userRepository.save(user);
     const { password, ...result } = updatedUser;
     return result;
+  }
+
+  async createAdminUser(createAdminUserData: RegisterDto) {
+    const existingUser = await this.userRepository.findOne({
+      where: { email: createAdminUserData.email },
+    });
+    if (existingUser) {
+      throw new ConflictException('Email already in use');
+    }
+    const hashedPassword = await this.hashPassword(createAdminUserData.password);
+    createAdminUserData.password = hashedPassword;
+    const newUser = this.userRepository.create({
+      email: createAdminUserData.email,
+      password: createAdminUserData.password,
+      firstName: createAdminUserData.firstName,
+      lastName: createAdminUserData.lastName,
+      phone: createAdminUserData.phone,
+      isActive: true,
+      role: UserRole.SUPER_ADMIN, // Default to STUDENT if role is not provided
+    });
+    const savedUser = await this.userRepository.save(newUser);
+    const { password, ...result } = savedUser;
+    return {
+      user: result,
+      message: 'User registered successfully',
+      status: 201,
+    };
   }
   private async verifyPassword(pass1, pass2): Promise<boolean> {
     return bcrypt.compare(pass1, pass2);

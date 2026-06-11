@@ -8,7 +8,7 @@ export class AppService {
 
   getHello(): string {
     const serviceName = this.configService.get<string>('appName');
-    console.log(serviceName);
+  
     return `Hello World! from ${serviceName}`;
   }
 }

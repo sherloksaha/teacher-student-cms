@@ -10,17 +10,16 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
         super({
             jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
             ignoreExpiration: false,
-            secretOrKey: process.env.JWT_SERVICE_SECRET!
+            secretOrKey: process.env.JWT_SERVICE_SECRET!,
         })
     }
 
     async validate(payload: any) {
+     
         try {
             const user = await this.authService.findCurrentUser(payload.sub)
-            return {
-                ...user,
-                role: payload.role
-            }
+
+            return user.data;
         } catch (e) {
             throw new UnauthorizedException('Invalid Token...')
         }

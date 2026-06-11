@@ -1,9 +1,13 @@
-import { Body, Controller, Param, Post, Put } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Put, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { RegisterDto } from './dto/register-dto';
 import { LoginDto } from './dto/login-dto';
-import { UpdatePostDto } from 'src/posts/dto/update-post-dto';
 import { UpdateUserDto } from 'src/users/dto/update-user-dto';
+import { JwtAuthGuard } from './guard/jwt-aut.guard';
+import { Roles } from './decorators/roles.decorators';
+import { UserRole } from './constant';
+import { CurrentUser } from './decorators/cuurent-user.decorator';
+import { RoleGuard } from './guard/roles-gauards';
 
 @Controller('auth')
 export class AuthController {
@@ -23,6 +27,20 @@ export class AuthController {
     @Put(':id')
     updateStaus(@Param('id') id: number, @Body() updateUserData: UpdateUserDto) {
         return this.authService.upDateUser(id, updateUserData)
+    }
+
+    @Get('current-user')
+    @UseGuards(JwtAuthGuard, RoleGuard)
+    @Roles(UserRole.STUDENT, UserRole.TEACHER, UserRole.SUPER_ADMIN)
+    getCurrentUser(@CurrentUser() user:any) {
+        return user;
+    }
+
+    @Post('create-admin-user')
+    @Roles(UserRole.SUPER_ADMIN)
+    @UseGuards(JwtAuthGuard, RoleGuard)
+    createAdminUser(@Body() createAdminUserData: RegisterDto) {
+        return this.authService.createAdminUser(createAdminUserData);
     }
 
 }
