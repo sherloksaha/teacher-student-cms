@@ -10,6 +10,7 @@ export class Student {
   @PrimaryGeneratedColumn()
   id: number;
 
+  
   @OneToOne(() => User, (user) => user.student, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'userId' })
   user: User;

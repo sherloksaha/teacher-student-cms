@@ -4,13 +4,19 @@ import { AuthService } from './auth.service';
 import { UsersModule } from 'src/users/users.module';
 import { User } from 'src/users/entities/user.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
-
+import { PassportModule } from '@nestjs/passport';
+import { JwtModule } from '@nestjs/jwt';
 @Module({
   imports: [
     UsersModule,
-    TypeOrmModule.forFeature([User]), // Import User entity for repository injection
+    TypeOrmModule.forFeature([User]),
+     // Import User entity for repository injection
+
+    PassportModule,
+    JwtModule.register({}),
   ],
   controllers: [AuthController],
   providers: [AuthService],
+  exports:[AuthService]
 })
 export class AuthModule {}

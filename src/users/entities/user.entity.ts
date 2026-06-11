@@ -10,7 +10,7 @@ import { Teacher } from './teacher.entity';
 import { Student } from './student.entity';
 
 export enum UserRole {
-  SUPER_ADMIN = 'super_admin',
+  SUPER_ADMIN = 'admin',
   TEACHER = 'teacher',
   STUDENT = 'student',
 }
@@ -23,7 +23,7 @@ export class User {
   @Column({ unique: true, length: 30 })
   email: string;
 
-  @Column({ length: 16 })
+  @Column({ length: 100 })
   password?: string; // Optional if you have social auth later
 
   @Column({ length: 15 })
@@ -35,8 +35,8 @@ export class User {
   @Column({ length: 10 })
   phone: string;
 
-  @Column()
-  refreshToken: string;
+  @Column({ nullable: true })
+  refreshToken?: string;
 
   @Column({
     type: 'enum',

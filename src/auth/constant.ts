@@ -1,5 +1,6 @@
 export enum UserRole {
     STUDENT = 'student',
     TEACHER = 'teacher',
-    ADMIN = 'admin',
-}
+    SUPER_ADMIN = 'admin',
+} 
+export const ROLES_KEY = 'roles';
